@@ -1,0 +1,91 @@
+created:
+    - database/factories/QuotationFactory.php
+    - database/factories/ProformaInvoiceFactory.php
+    - database/factories/InvoiceFactory.php
+    - database/factories/SalesOrderFactory.php
+    - database/factories/RecurringInvoiceFactory.php
+    - database/factories/CreditNoteFactory.php
+    - database/factories/DebitNoteFactory.php
+    - database/factories/PaymentFactory.php
+    - database/factories/StatementOfAccountFactory.php
+    - database/factories/TermFactory.php
+    - database/factories/UserFactory.php
+    - database/factories/CompanyFactory.php
+    - database/factories/DepartmentFactory.php
+    - database/factories/RoleFactory.php
+    - database/factories/PermissionFactory.php
+    - database/factories/IndustryFactory.php
+    - database/factories/CustomerFactory.php
+    - database/factories/SupplierFactory.php
+    - database/factories/TaxFactory.php
+    - database/factories/CurrencyFactory.php
+    - database/factories/ProductFactory.php
+    - database/migrations/2025_01_12_114858_create_quotations_table.php
+    - database/migrations/2025_01_12_114859_create_proforma_invoices_table.php
+    - database/migrations/2025_01_12_114900_create_invoices_table.php
+    - database/migrations/2025_01_12_114901_create_sales_orders_table.php
+    - database/migrations/2025_01_12_114902_create_recurring_invoices_table.php
+    - database/migrations/2025_01_12_114903_create_credit_notes_table.php
+    - database/migrations/2025_01_12_114904_create_debit_notes_table.php
+    - database/migrations/2025_01_12_114905_create_payments_table.php
+    - database/migrations/2025_01_12_114906_create_statement_of_accounts_table.php
+    - database/migrations/2025_01_12_114907_create_terms_table.php
+    - database/migrations/2025_01_12_114908_create_users_table.php
+    - database/migrations/2025_01_12_114909_create_companies_table.php
+    - database/migrations/2025_01_12_114910_create_departments_table.php
+    - database/migrations/2025_01_12_114911_create_roles_table.php
+    - database/migrations/2025_01_12_114912_create_permissions_table.php
+    - database/migrations/2025_01_12_114913_create_industries_table.php
+    - database/migrations/2025_01_12_114914_create_customers_table.php
+    - database/migrations/2025_01_12_114915_create_suppliers_table.php
+    - database/migrations/2025_01_12_114916_create_taxes_table.php
+    - database/migrations/2025_01_12_114917_create_currencies_table.php
+    - database/migrations/2025_01_12_114918_create_products_table.php
+    - database/migrations/2025_01_12_114919_create_product_quotation_table.php
+    - database/migrations/2025_01_12_114920_create_invoice_payment_table.php
+    - database/migrations/2025_01_12_114921_create_product_sales_order_table.php
+    - database/migrations/2025_01_12_114922_create_permission_role_table.php
+    - database/migrations/2025_01_12_114923_create_customer_product_table.php
+    - app/Models/Quotation.php
+    - 'app/Models/Proforma Invoice.php'
+    - app/Models/Invoice.php
+    - 'app/Models/Sales Order.php'
+    - 'app/Models/Recurring Invoice.php'
+    - 'app/Models/Credit Note.php'
+    - 'app/Models/Debit Note.php'
+    - app/Models/Payment.php
+    - 'app/Models/Statement of Account.php'
+    - app/Models/Term.php
+    - app/Models/User.php
+    - app/Models/Company.php
+    - app/Models/Department.php
+    - app/Models/Role.php
+    - app/Models/Permission.php
+    - app/Models/Industry.php
+    - app/Models/Customer.php
+    - app/Models/Supplier.php
+    - app/Models/Tax.php
+    - app/Models/Currency.php
+    - app/Models/Product.php
+models:
+    Quotation: { customer_id: unsignedInteger, company_id: unsignedInteger, tax_id: json, term_id: unsignedInteger, subtotal: 'decimal:8,2', discount: 'decimal:8,2', discount_type: 'enum:flat,percentage', total: 'decimal:8,2', currency: string, note: 'string nullable', status: 'enum:draft, sent, accepted, declined, expired', issue_date: datetime, expiry_date: datetime, relationships: { belongsTo: 'Company, Customer', hasOne: Term, hasMany: 'Product, Proforma Invoice, Tax', belongsToMany: Product } }
+    'Proforma Invoice': { customer_id: unsignedInteger, company_id: unsignedInteger, quotation_id: unsignedInteger, tax_id: json, term_id: unsignedInteger, subtotal: 'decimal:8,2', discount: 'decimal:8,2', discount_type: 'enum:flat,percentage', total: 'decimal:8,2', currency: string, note: 'string nullable', status: 'enum:pending,approved,rejected,paid,cancelled', issue_date: date, due_date: date, relationships: { belongsTo: 'Company, Customer, Quotation', hasMany: 'Product, Tax', hasOne: 'Invoice, Term' } }
+    Invoice: { customer_id: unsignedInteger, company_id: unsignedInteger, quotation_id: unsignedInteger, proforma_invoice_id: unsignedInteger, tax_id: json, term_id: unsignedInteger, subtotal: 'decimal:8,2', discount: 'decimal:8,2', discount_type: 'enum:flat,percentage', total: 'decimal:8,2', currency: string, note: 'string nullable', status: 'enum:pending,approved,rejected,paid,cancelled', issue_date: date, due_date: date, relationships: { belongsTo: 'Company, Customer, Quotation, Proforma Invoice', hasMany: 'Product, Tax', belongsToMany: Payment, hasOne: Term } }
+    'Sales Order': { customer_id: unsignedInteger, company_id: unsignedInteger, invoice_id: unsignedInteger, term_id: unsignedInteger, product_ids: json, subtotal: 'decimal:8,2', discount: 'decimal:8,2', discount_type: 'enum:flat,percentage', total: 'decimal:8,2', currency: string, note: 'string nullable', status: 'enum:pending,approved,rejected,paid,cancelled', relationships: { belongsTo: 'Company, Customer', belongsToMany: Product, hasOne: 'Term, Invoice' } }
+    'Recurring Invoice': { customer_id: unsignedInteger, company_id: unsignedInteger, tax_ids: json, product_ids: json, term_id: unsignedInteger, schedule: json, subtotal: 'decimal:8,2', discount: 'decimal:8,2', discount_type: 'enum:flat,percentage', total: 'decimal:8,2', currency: string, note: 'string nullable', status: 'enum:active,inactive,cancelled', start_date: date, end_date: 'date nullable', relationships: { belongsTo: 'Company, Customer', hasMany: Product, hasOne: Invoice } }
+    'Credit Note': { customer_id: unsignedInteger, company_id: unsignedInteger, product_ids: json, invoice_id: unsignedInteger, amount: 'decimal:8,2', note: 'string nullable', term_id: unsignedInteger, relationships: { belongsTo: 'Company, Customer, Invoice', hasMany: Product } }
+    'Debit Note': { company_id: unsignedInteger, customer_id: unsignedInteger, invoice_id: unsignedInteger, amount: 'decimal:8,2', description: text, status: 'enum:pending, resolved', relationships: { belongsTo: 'Company, Customer, Invoice', hasMany: Product } }
+    Payment: { company_id: unsignedInteger, customer_id: unsignedInteger, invoice_id: unsignedInteger, amount: 'decimal:8,2', payment_method: 'enum:bank_transfer, credit_card, cash', transaction_reference: string, payment_date: date, status: 'enum:completed, pending, failed', relationships: { belongsTo: 'Company, Customer', belongsToMany: Invoice } }
+    'Statement of Account': { company_id: unsignedInteger, customer_id: unsignedInteger, start_date: date, end_date: date, total_due: 'decimal:8,2', currency: string, relationships: { belongsTo: 'Company, Customer', hasMany: 'Invoice, Payment, Credit Note, Debit Note' } }
+    Term: { title: string, type: 'enum:quotation, proforma_invoice, invoice, credit_note, debit_note, sales_order, recurring_invoice', description: text, relationships: { belongsTo: Company, hasMany: 'Quotation, Proforma Invoice, Invoice, Credit Note, Debit Note, Sales Order, Recurring Invoice' } }
+    User: { name: string, email: email, password: string, company_id: unsignedInteger, role_id: unsignedInteger, status: 'enum:inactive,active,suspended', relationships: { belongsTo: 'Company, Role' } }
+    Company: { name: 'string unique', industry: string, code: 'string unique', business_address: string, registration_address: string, country_of_registration: string, registration_number: 'string unique', contact_number: string, status: 'enum:inactive,active,suspended', relationships: { hasMany: 'User, Customer, Supplier, Product, Department' } }
+    Department: { company_id: unsignedInteger, name: string, slug: string, relationships: { belongsTo: Company, hasMany: User } }
+    Role: { name: string, permissions: array, relationships: { belongsToMany: Permission } }
+    Permission: { name: string, description: text, role_id: unsignedInteger, relationships: { belongsToMany: Role } }
+    Industry: { name: string, description: text }
+    Customer: { name: string, email: email, phone: string, address: string, company_id: unsignedInteger, relationships: { belongsToMany: Product, belongsTo: Supplier } }
+    Supplier: { name: string, email: email, phone: string, address: string, company_id: unsignedInteger, relationships: { belongsTo: Customer } }
+    Tax: { code: string, rate: decimal }
+    Currency: { code: string, symbol: string, name: string }
+    Product: { name: string, sku: string, price: decimal, stock: unsignedInteger, company_id: unsignedInteger, relationships: { belongsToMany: 'SalesOrder, Customer', belongsTo: Supplier, hasMany: Invoice } }
