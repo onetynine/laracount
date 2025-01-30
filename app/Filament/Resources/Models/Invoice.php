@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Quotation extends Model
+class Invoice extends Model
 {
     use HasFactory;
 
@@ -19,19 +19,22 @@ class Quotation extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'customer_id',
         'company_id',
+        'quotation_id',
+        'proforma_invoice_id',
         'tax_id',
         'term_id',
+        'product_id',
         'subtotal',
         'discount',
-        'discount_type',
         'total',
         'currency',
         'note',
         'status',
         'issue_date',
-        'expiry_date',
+        'due_date',
     ];
 
     /**
@@ -41,15 +44,19 @@ class Quotation extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'user_id' => 'integer',
         'customer_id' => 'integer',
         'company_id' => 'integer',
+        'quotation_id' => 'integer',
+        'proforma_invoice_id' => 'integer',
         'tax_id' => 'array',
         'term_id' => 'integer',
+        'product_id' => 'array',
         'subtotal' => 'decimal:2',
         'discount' => 'decimal:2',
         'total' => 'decimal:2',
-        'issue_date' => 'datetime',
-        'expiry_date' => 'datetime',
+        'issue_date' => 'date',
+        'due_date' => 'date',
     ];
 
     public function company(): BelongsTo
@@ -62,9 +69,19 @@ class Quotation extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function term(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(Term::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function quotation(): BelongsTo
+    {
+        return $this->belongsTo(Quotation::class);
+    }
+
+    public function proformaInvoice(): BelongsTo
+    {
+        return $this->belongsTo(ProformaInvoice::class);
     }
 
     public function products(): HasMany
@@ -72,13 +89,18 @@ class Quotation extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function proformaInvoices(): HasMany
-    {
-        return $this->hasMany(ProformaInvoice::class);
-    }
-
     public function taxes(): HasMany
     {
         return $this->hasMany(Tax::class);
+    }
+
+    public function payments(): BelongsToMany
+    {
+        return $this->belongsToMany(Payment::class);
+    }
+
+    public function term(): HasOne
+    {
+        return $this->hasOne(Term::class);
     }
 }

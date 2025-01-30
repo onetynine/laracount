@@ -23,20 +23,21 @@ class ProformaInvoiceFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => ::factory(),
             'customer_id' => ::factory(),
             'company_id' => Company::factory(),
             'quotation_id' => ::factory(),
             'tax_id' => '{}',
             'term_id' => $this->faker->randomNumber(),
+            'product_id' => '{}',
             'subtotal' => $this->faker->randomFloat(2, 0, 999999.99),
             'discount' => $this->faker->randomFloat(2, 0, 999999.99),
-            'discount_type' => $this->faker->randomElement(["flat","percentage"]),
             'total' => $this->faker->randomFloat(2, 0, 999999.99),
             'currency' => $this->faker->word(),
             'note' => $this->faker->word(),
             'status' => $this->faker->randomElement(["pending","approved","rejected","paid","cancelled"]),
             'issue_date' => $this->faker->date(),
-            'due_date' => $this->faker->date(),
+            'expiry_date' => $this->faker->date(),
         ];
     }
 }

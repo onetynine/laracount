@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Term extends Model
+class StatementOfAccount extends Model
 {
     use HasFactory;
 
@@ -17,10 +17,12 @@ class Term extends Model
      * @var array
      */
     protected $fillable = [
-        'title',
-        'type',
-        'description',
         'company_id',
+        'customer_id',
+        'start_date',
+        'end_date',
+        'total_due',
+        'currency',
     ];
 
     /**
@@ -31,6 +33,10 @@ class Term extends Model
     protected $casts = [
         'id' => 'integer',
         'company_id' => 'integer',
+        'customer_id' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'total_due' => 'decimal:2',
     ];
 
     public function company(): BelongsTo
@@ -38,19 +44,19 @@ class Term extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function quotations(): HasMany
+    public function customer(): BelongsTo
     {
-        return $this->hasMany(Quotation::class);
-    }
-
-    public function proformaInvoices(): HasMany
-    {
-        return $this->hasMany(ProformaInvoice::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function creditNotes(): HasMany
@@ -61,15 +67,5 @@ class Term extends Model
     public function debitNotes(): HasMany
     {
         return $this->hasMany(DebitNote::class);
-    }
-
-    public function salesOrders(): HasMany
-    {
-        return $this->hasMany(SalesOrder::class);
-    }
-
-    public function recurringInvoices(): HasMany
-    {
-        return $this->hasMany(RecurringInvoice::class);
     }
 }

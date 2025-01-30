@@ -20,8 +20,10 @@ class Customer extends Model
         'name',
         'email',
         'phone',
-        'address',
+        'business_address',
+        'delivery_address',
         'company_id',
+        'attention_to',
         'supplier_id',
     ];
 
@@ -32,7 +34,10 @@ class Customer extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'business_address' => 'array',
+        'delivery_address' => 'array',
         'company_id' => 'integer',
+        'attention_to' => 'array',
         'supplier_id' => 'integer',
     ];
 
@@ -44,5 +49,10 @@ class Customer extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 }

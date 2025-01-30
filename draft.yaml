@@ -3,117 +3,101 @@ models:
   # Sales and Revenue
 
   Quotation:
-    customer_id: unsignedInteger
-    company_id: unsignedInteger
-    tax_id: json          # Tax 
-    term_id: unsignedInteger       # Linked terms and conditions
+    reference: string # quote reference, maybe from a purchase order or something
+    user_id: unsignedInteger # tag user / issuer
+    customer_id: unsignedInteger # tag customer
+    company_id: unsignedInteger # tag issuer company
+    tax_id: json nullable    # tag one or multiple taxes 
+    term_id: unsignedInteger nullable # tag a set of terms
+    product_id: json         # tag one or multiple products
     subtotal: decimal:8,2    # Total before tax and discount
-    discount: decimal:8,2    # Total discount applied
-    discount_type: enum:flat,percentage  # Type of discount
+    discount: decimal:8,2 nullable   # Total discount applied
     total: decimal:8,2       # Final payable amount
     currency: string         # Currency code
-    note: string nullable
-    status: enum:draft, sent, accepted, declined, expired
-    issue_date: datetime
-    expiry_date: datetime
+    note: string nullable    # Additional notes
+    status: enum:draft, sent, accepted, declined, expired # quote status
+    issue_date: date # date of issuance
+    expiry_date: date # date of expiry
     relationships:
-      belongsTo: Company, Customer
-      hasOne: Term
-      hasMany: Product, Proforma Invoice, Tax
-      belongsToMany: Product
-
+      belongsTo: Company, Customer, User # need User so we know who created the quote
+      hasOne: Term 
+      hasMany: Proforma Invoice, Tax
+      
   Proforma Invoice:
-    customer_id: unsignedInteger
-    company_id: unsignedInteger
-    quotation_id: unsignedInteger  # Optional, if derived from a Quotation
-    tax_id: json            # Tax 
-    term_id: unsignedInteger       # Linked terms and conditions
+    user_id: unsignedInteger # tag user / issuer
+    customer_id: unsignedInteger # tag customer
+    company_id: unsignedInteger # tag issuer
+    quotation_id: unsignedInteger  # reference to the quotation
+    tax_id: json nullable           # tag one or multiple taxes
+    term_id: unsignedInteger nullable # tag a set of terms
+    product_id: json         # tag one or multiple products
     subtotal: decimal:8,2    # Total before tax and discount
-    discount: decimal:8,2    # Total discount applied
-    discount_type: enum:flat,percentage  # Type of discount
+    discount: decimal:8,2 nullable    # Total discount applied
     total: decimal:8,2       # Final payable amount
     currency: string         # Currency code
-    note: string nullable
+    note: string nullable    # Additional notes
     status: enum:pending,approved,rejected,paid,cancelled
-    issue_date: date               # Date of issue
-    due_date: date                 # Payment due date
+    issue_date: date               # date of issuance
+    expiry_date: date                 # date of expiry
     relationships:
-      belongsTo: Company, Customer, Quotation
+      belongsTo: Company, Customer, User, Quotation
       hasMany: Product, Tax
       hasOne: Invoice, Term
 
   Invoice:
-    customer_id: unsignedInteger
-    company_id: unsignedInteger
-    quotation_id: unsignedInteger
-    proforma_invoice_id: unsignedInteger
-    tax_id: json            # Tax 
-    term_id: unsignedInteger       # Linked terms and conditions
+    user_id: unsignedInteger # tag user / issuer
+    customer_id: unsignedInteger # tag customer
+    company_id: unsignedInteger # tag issuer
+    quotation_id: unsignedInteger nullable # reference to the quotation
+    proforma_invoice_id: unsignedInteger nullable # reference to the proforma invoice
+    tax_id: json nullable            # tag one or multiple taxes 
+    term_id: unsignedInteger nullable     # tag a set of terms
+    product_id: json         # tag one or multiple products
     subtotal: decimal:8,2    # Total before tax and discount
-    discount: decimal:8,2    # Total discount applied
-    discount_type: enum:flat,percentage  # Type of discount
+    discount: decimal:8,2 nullable   # Total discount applied
     total: decimal:8,2       # Final payable amount
     currency: string         # Currency code
-    note: string nullable
+    note: string nullable   # Additional notes
     status: enum:pending,approved,rejected,paid,cancelled
     issue_date: date               # Date of issue
     due_date: date                 # Payment due date
     relationships:
-      belongsTo: Company, Customer, Quotation, Proforma Invoice
+      belongsTo: Company, Customer, User, Quotation, Proforma Invoice
       hasMany: Product, Tax
       belongsToMany: Payment
       hasOne: Term
 
   Sales Order:
+    user_id: unsignedInteger # tag user / issuer
     customer_id: unsignedInteger
     company_id: unsignedInteger
-    invoice_id: unsignedInteger
+    invoice_id: unsignedInteger nullable
     term_id: unsignedInteger  # Linked terms and conditions
-    product_ids: json  # Store multiple product IDs
+    product_id: json  # Store multiple product IDs
     subtotal: decimal:8,2    # Total before tax and discount
-    discount: decimal:8,2    # Total discount applied
-    discount_type: enum:flat,percentage  # Type of discount
+    discount: decimal:8,2 nullable    # Total discount applied
     total: decimal:8,2       # Final payable amount
     currency: string         # Currency code
     note: string nullable
     status: enum:pending,approved,rejected,paid,cancelled
     relationships:
-      belongsTo: Company, Customer
+      belongsTo: Company, Customer, User
       belongsToMany: Product
       hasOne: Term, Invoice
-
-  Recurring Invoice:
-    customer_id: unsignedInteger
-    company_id: unsignedInteger
-    tax_ids: json            # Linked tax IDs
-    product_ids: json        # Linked product IDs
-    term_id: unsignedInteger # Linked terms and conditions
-    schedule: json           # Recurrence schedule (e.g., {"frequency": "monthly", "day": 15})
-    subtotal: decimal:8,2    # Total before tax and discount
-    discount: decimal:8,2    # Total discount applied
-    discount_type: enum:flat,percentage
-    total: decimal:8,2       # Final payable amount
-    currency: string         # Currency code
-    note: string nullable
-    status: enum:active,inactive,cancelled
-    start_date: date         # Start of recurring invoice
-    end_date: date nullable  # End of recurring invoice
-    relationships:
-      belongsTo: Company, Customer
-      hasMany: Product
-      hasOne: Invoice 
 
   Credit Note:
     customer_id: unsignedInteger
     company_id: unsignedInteger
-    product_ids: json  # Store multiple product IDs
-    invoice_id: unsignedInteger
+    invoice_id: unsignedInteger nullable  # May reference an invoice, but not mandatory
     amount: decimal:8,2
     note: string nullable
-    term_id: unsignedInteger  # Linked terms and conditions
+    term_id: unsignedInteger nullable
+    status: enum:draft, issued, settled default:draft
+    issue_date: datetime
+    settlement_date: datetime nullable
     relationships:
       belongsTo: Company, Customer, Invoice
-      hasMany: Product
+      belongsToMany: Product
 
   Debit Note:
     company_id: unsignedInteger
@@ -152,27 +136,28 @@ models:
 
   Term:
     title: string
-    type: enum:quotation, proforma_invoice, invoice, credit_note, debit_note, sales_order, recurring_invoice
+    type: enum:quotation, proforma_invoice, invoice, credit_note, debit_note, sales_order
     description: text
     relationships:
       belongsTo: Company
-      hasMany: Quotation, Proforma Invoice, Invoice, Credit Note, Debit Note, Sales Order, Recurring Invoice
+      hasMany: Quotation, Proforma Invoice, Invoice, Credit Note, Debit Note, Sales Order
 
 
 
 # Company registration handled separately (documentation needed)
   Company:
     name: string unique
-    industry: string
+    industry: string nullable
     code: string unique          # auto-generated based on input
-    business_address: string
-    registration_address: string
+    business_address: json       # Store address components as JSON
+    registration_address: json   # Also consider JSON if detailed components are needed
     country_of_registration: string
     registration_number: string unique
     contact_number: string
     status: enum:inactive,active,suspended
     relationships:
       hasMany: User, Customer, Supplier, Product, Department
+
 
   Department:
     company_id: unsignedInteger
@@ -205,11 +190,13 @@ models:
     name: string
     email: email
     phone: string
-    address: string
-    company_id: unsignedInteger
+    business_address: json       # Store detailed business address components
+    delivery_address: json       # Store detailed delivery address components
+    company_id: unsignedInteger  # Link to the customer's company
+    attention_to: json nullable  # Person in charge or attention to details
     relationships:
       belongsToMany: Product
-      belongsTo: Supplier
+      belongsTo: Supplier, Company
 
   Supplier:
     name: string
@@ -222,7 +209,10 @@ models:
 
   Tax:
     code: string
+    type: string
     rate: decimal
+    description: text nullable
+    country: string
 
   Currency:
     code: string
@@ -231,14 +221,19 @@ models:
 
   Product:
     name: string
-    sku: string
-    price: decimal
-    stock: unsignedInteger
-    company_id: unsignedInteger
+    sku: string unique
+    price: decimal:8,2
+    stock: unsignedInteger default:0
+    description: text nullable # Detailed description of the product
+    status: enum:active,inactive,suspended default:active
+    company_id: unsignedInteger # Links product to the owning company
+    category_id: unsignedInteger nullable # Links product to a category
+    tax_id: unsignedInteger nullable # Links product to a tax rate
     relationships:
+      belongsTo: Supplier, Category, Tax, Company
       belongsToMany: SalesOrder, Customer
-      belongsTo: Supplier
       hasMany: Invoice
+
 
 
 

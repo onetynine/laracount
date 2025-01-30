@@ -16,7 +16,10 @@ class Tax extends Model
      */
     protected $fillable = [
         'code',
+        'type',
         'rate',
+        'description',
+        'country',
     ];
 
     /**
@@ -26,6 +29,6 @@ class Tax extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'rate' => 'decimal',
+        'rate' => 'decimal:2',
     ];
 }

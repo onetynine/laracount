@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class CreditNote extends Model
+class SalesOrder extends Model
 {
     use HasFactory;
 
@@ -17,13 +18,18 @@ class CreditNote extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'customer_id',
         'company_id',
-        'product_ids',
         'invoice_id',
-        'amount',
-        'note',
         'term_id',
+        'product_id',
+        'subtotal',
+        'discount',
+        'total',
+        'currency',
+        'note',
+        'status',
     ];
 
     /**
@@ -33,12 +39,15 @@ class CreditNote extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'user_id' => 'integer',
         'customer_id' => 'integer',
         'company_id' => 'integer',
-        'product_ids' => 'array',
         'invoice_id' => 'integer',
-        'amount' => 'decimal:2',
         'term_id' => 'integer',
+        'product_id' => 'array',
+        'subtotal' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
     public function company(): BelongsTo
@@ -51,13 +60,23 @@ class CreditNote extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function invoice(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function products(): HasMany
+    public function products(): BelongsToMany
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class);
+    }
+
+    public function term(): HasOne
+    {
+        return $this->hasOne(Term::class);
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
     }
 }

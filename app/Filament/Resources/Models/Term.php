@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Product extends Model
+class Term extends Model
 {
     use HasFactory;
 
@@ -18,12 +17,10 @@ class Product extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'sku',
-        'price',
-        'stock',
+        'title',
+        'type',
+        'description',
         'company_id',
-        'supplier_id',
     ];
 
     /**
@@ -33,29 +30,41 @@ class Product extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'price' => 'decimal',
-        'stock' => 'integer',
         'company_id' => 'integer',
-        'supplier_id' => 'integer',
     ];
 
-    public function salesOrders(): BelongsToMany
+    public function company(): BelongsTo
     {
-        return $this->belongsToMany(SalesOrder::class);
+        return $this->belongsTo(Company::class);
     }
 
-    public function customers(): BelongsToMany
+    public function quotations(): HasMany
     {
-        return $this->belongsToMany(Customer::class);
+        return $this->hasMany(Quotation::class);
     }
 
-    public function supplier(): BelongsTo
+    public function proformaInvoices(): HasMany
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->hasMany(ProformaInvoice::class);
     }
 
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function creditNotes(): HasMany
+    {
+        return $this->hasMany(CreditNote::class);
+    }
+
+    public function debitNotes(): HasMany
+    {
+        return $this->hasMany(DebitNote::class);
+    }
+
+    public function salesOrders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class);
     }
 }

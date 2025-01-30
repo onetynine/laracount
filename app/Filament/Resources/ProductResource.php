@@ -12,37 +12,77 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\Company;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?string $navigationGroup = 'Data Maintenance';
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('sku')
-                    ->label('SKU')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->prefix('$'),
-                Forms\Components\TextInput::make('stock')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\Select::make('supplier_id')
-                    ->relationship('supplier', 'name')
-                    ->required(),
+                Forms\Components\Fieldset::make('Product Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(4),
+                        Forms\Components\TextInput::make('sku')
+                            ->label('SKU')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('price')
+                            ->required()
+                            ->numeric()
+                            ->prefix('$'),
+                        Forms\Components\TextInput::make('stock')
+                            ->default(0)
+                            ->numeric()
+                            ->nullable(),
+                        Forms\Components\RichEditor::make('description')
+                            ->nullable()
+                            ->columnSpan(5),
+
+                        Forms\Components\Radio::make('status')
+                            ->options([
+                                'active' => 'Active',
+                                'inactive' => 'Inactive',
+                                'suspended' => 'Suspended',
+                            ])
+                            ->descriptions([
+                                'active' => 'Will be selectable in documents',
+                                'inactive' => 'Will NOT be selectable in documents.',
+                                'suspended' => 'Suspended by Laracount'
+                            ])
+                            ->default('active')
+                            ->columnSpan(2)
+                    ])
+                    ->columns(7),
+
+                Forms\Components\Fieldset::make('Relationship')
+                    ->schema([
+                        Forms\Components\Select::make('company_id')
+                            ->label('Company')
+                            ->options(Company::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->required()
+                            ->helpertext('Select which company this customer belongs to')
+                            ->columnSpan(4),
+
+                        Forms\Components\Select::make('supplier_id')
+                            ->relationship('supplier', 'name')
+                            ->nullable()
+                            ->columnSpan(2),
+                        Forms\Components\Select::make('tax_id')
+                            ->relationship('tax', 'code')
+                            ->nullable(),
+                    ])
+                    ->columns(5)
+
             ]);
     }
 
@@ -61,7 +101,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('stock')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company_id')
+                Tables\Columns\TextColumn::make('company.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('supplier.name')

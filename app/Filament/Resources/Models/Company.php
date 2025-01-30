@@ -20,7 +20,7 @@ class Company extends Model
         'industry',
         'code',
         'business_address',
-        'registration_address',
+        'delivery_address',
         'country_of_registration',
         'registration_number',
         'contact_number',
@@ -34,6 +34,8 @@ class Company extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'business_address' => 'array',
+        'delivery_address' => 'array',
     ];
 
     public function users(): HasMany

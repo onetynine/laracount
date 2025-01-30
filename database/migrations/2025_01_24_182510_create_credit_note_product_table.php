@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('taxes', function (Blueprint $table) {
-            $table->id();
-            $table->string('code');
-            $table->decimal('rate');
-            $table->timestamps();
+        Schema::create('credit_note_product', function (Blueprint $table) {
+            $table->foreignId('credit_note_id');
+            $table->foreignId('product_id');
         });
     }
 
@@ -24,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('taxes');
+        Schema::dropIfExists('credit_note_product');
     }
 };

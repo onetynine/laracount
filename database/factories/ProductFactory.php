@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use App\Models\;
 use App\Models\Product;
 use App\Models\Supplier;
 
@@ -24,9 +25,13 @@ class ProductFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'sku' => $this->faker->word(),
-            'price' => $this->faker->randomFloat(0, 0, 9999999999.),
+            'price' => $this->faker->randomFloat(2, 0, 999999.99),
             'stock' => $this->faker->randomNumber(),
-            'company_id' => $this->faker->randomNumber(),
+            'description' => $this->faker->text(),
+            'status' => $this->faker->randomElement(["active","inactive","suspended"]),
+            'company_id' => ::factory(),
+            'category_id' => ::factory(),
+            'tax_id' => ::factory(),
             'supplier_id' => Supplier::factory(),
         ];
     }

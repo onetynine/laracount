@@ -22,7 +22,10 @@ class TaxFactory extends Factory
     {
         return [
             'code' => $this->faker->word(),
+            'type' => $this->faker->word(),
             'rate' => $this->faker->randomFloat(0, 0, 9999999999.),
+            'description' => $this->faker->text(),
+            'country' => $this->faker->country(),
         ];
     }
 }

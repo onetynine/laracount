@@ -13,20 +13,21 @@ return new class extends Migration
     {
         Schema::create('proforma_invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
             $table->foreignId('customer_id');
             $table->foreignId('company_id');
-            $table->foreignId('quotation_id')->nullable();
+            $table->foreignId('quotation_id');
             $table->json('tax_id')->nullable();
             $table->unsignedInteger('term_id')->nullable();
-            $table->decimal('subtotal', 8, 2)->nullable();
+            $table->json('product_id');
+            $table->decimal('subtotal', 8, 2);
             $table->decimal('discount', 8, 2)->nullable();
-            $table->enum('discount_type', ["flat", "percentage"])->nullable();
-            $table->decimal('total', 8, 2)->nullable();
-            $table->string('currency')->nullable();
+            $table->decimal('total', 8, 2);
+            $table->string('currency');
             $table->string('note')->nullable();
-            $table->enum('status', ["pending", "approved", "rejected", "paid", "cancelled"])->nullable();
+            $table->enum('status', ["pending","approved","rejected","paid","cancelled"]);
             $table->date('issue_date');
-            $table->date('due_date')->nullable();
+            $table->date('expiry_date');
             $table->timestamps();
         });
     }

@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id');
             $table->foreignId('customer_id');
-            $table->foreignId('invoice_id')->nullable();
-            $table->decimal('amount', 8, 2)->nullable();
-            $table->text('description')->nullable();
-            $table->enum('status', ["pending", ""])->nullable();
+            $table->foreignId('invoice_id');
+            $table->decimal('amount', 8, 2);
+            $table->text('description');
+            $table->enum('status', ["pending",""]);
             $table->timestamps();
         });
     }

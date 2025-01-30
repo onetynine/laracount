@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id');
             $table->foreignId('company_id');
-            $table->json('product_ids')->nullable();
             $table->foreignId('invoice_id')->nullable();
-            $table->decimal('amount', 8, 2)->nullable();
+            $table->decimal('amount', 8, 2);
             $table->string('note')->nullable();
             $table->unsignedInteger('term_id')->nullable();
+            $table->enum('status', ["draft",""])->default('draft');
+            $table->dateTime('issue_date');
+            $table->dateTime('settlement_date')->nullable();
             $table->timestamps();
         });
     }

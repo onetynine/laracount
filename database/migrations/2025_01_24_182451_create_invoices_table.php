@@ -11,21 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quotations', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
             $table->foreignId('customer_id');
             $table->foreignId('company_id');
+            $table->foreignId('quotation_id')->nullable();
+            $table->foreignId('proforma_invoice_id')->nullable();
             $table->json('tax_id')->nullable();
             $table->unsignedInteger('term_id')->nullable();
-            $table->decimal('subtotal', 8, 2)->nullable();
+            $table->json('product_id');
+            $table->decimal('subtotal', 8, 2);
             $table->decimal('discount', 8, 2)->nullable();
-            $table->enum('discount_type', ["flat", "percentage"])->nullable();
-            $table->decimal('total', 8, 2)->nullable();
+            $table->decimal('total', 8, 2);
             $table->string('currency');
             $table->string('note')->nullable();
-            $table->enum('status', ["draft", ""]);
-            $table->dateTime('issue_date')->nullable();
-            $table->dateTime('expiry_date')->nullable();
+            $table->enum('status', ["pending","approved","rejected","paid","cancelled"]);
+            $table->date('issue_date');
+            $table->date('due_date');
             $table->timestamps();
         });
     }
@@ -35,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('quotations');
+        Schema::dropIfExists('invoices');
     }
 };

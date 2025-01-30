@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\Company;
 
 class TermResource extends Resource
 {
@@ -23,16 +24,39 @@ class TermResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('type')
-                    ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->required(),
-                Forms\Components\Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->required(),
+                Forms\Components\Fieldset::make('Terms')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                        Forms\Components\Select::make('type')
+                            ->required()
+                            ->options([
+                                'quotation' => 'Quotation',
+                                'proforma_invoice' => 'Proforma Invoice',
+                                'invoice' => 'Invoice',
+                                'sales_order' => 'Sales Order',
+                                'credit_note' => 'Credit Note',
+                                'debit_note' => 'Debit Note',
+                            ]),
+                        Forms\Components\RichEditor::make('description')
+                            ->required()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(3),
+
+                Forms\Components\Fieldset::make('Relation')
+                    ->schema([
+                        Forms\Components\Select::make('company_id')
+                            ->label('Company')
+                            ->options(Company::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->required()
+                            ->helpertext('Select which company this term belongs to')
+                            ->columnSpan(4),
+                    ]),
             ]);
     }
 

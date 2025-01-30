@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('industry')->nullable();
-            $table->string('code')->unique();
-            $table->string('business_address')->nullable();
-            $table->string('registration_address')->nullable();
-            $table->string('country_of_registration')->nullable();
+            $table->string('code')->unique()->nullable();
+            $table->json('business_address');
+            $table->json('delivery_address');
             $table->string('registration_number')->unique();
             $table->string('contact_number');
             $table->enum('status', ["inactive", "active", "suspended"]);

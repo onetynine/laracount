@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('terms', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->enum('type', ["quotation", "proforma_invoice", "invoice", "sales_order", "recurring_invoice", "credit_note", "debit_note", "payment", "statement_of_accounts"]);
-            $table->json('description');
-            $table->foreignId('company_id');
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('address');
+            $table->unsignedInteger('company_id');
+            $table->foreignId('customer_id');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('terms');
+        Schema::dropIfExists('suppliers');
     }
 };
